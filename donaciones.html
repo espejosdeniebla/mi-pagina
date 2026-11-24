@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es" class="html-donaciones">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Espejos de Niebla — Siembra Vida: dona y siembra un árbol nativo en los páramos.">
+  <title>Siembra Vida — Espejos de Niebla</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilos.css">
+  <link rel="stylesheet" href="donaciones.css">
+</head>
+<body class="pagina-donaciones">
+  <video class="video-fondo" autoplay muted loop playsinline>
+    <source src="assets/videos/backgrounds/donaciones.mp4" type="video/mp4">
+</video>
+
+  <main class="bosque-pantalla">
+
+    <header class="encabezado">
+      <a href="index.html#inicio" class="enlace-logo" aria-label="Ir al inicio">
+        <img src="img/Logo_contornos.png" alt="Espejos de Niebla" class="imagen-logo">
+      </a>
+      <a href="index.html#siembra" class="volver-inicio">← Siembra</a>
+    </header>
+
+    <!-- ===== Texto principal + botón de donación (columna izquierda en escritorio) ===== -->
+    <section class="panel-texto">
+      <p class="antetitulo">Siembra Vida · La Plantatón</p>
+      <h1 class="titulo-donacion">Cada árbol es una<br>oportunidad de sembrar.</h1>
+      <p class="descripcion-donacion">Recorre el bosque y descubre cada uno de los 50 árboles disponibles. Tu aporte se transforma en la siembra y el cuidado de una especie nativa en los páramos.</p>
+
+      <a href="https://vaki.co/vaki/espejos-de-niebla-placeholder" target="_blank" rel="noopener noreferrer" class="boton-donar" id="botonDonar">
+        <span>Dona aquí</span>
+        <span class="icono-boton" aria-hidden="true">→</span>
+      </a>
+    </section>
+
+    <!-- ===== Bosque: buscador + 50 árboles interactivos ===== -->
+    <div class="zona-bosque">
+
+      <!-- Buscador de árboles (la lógica está en donaciones.js) -->
+      <div class="buscador" role="search">
+        <label class="solo-lectores" for="busquedaArbol">Buscar un árbol por nombre o número</label>
+        <div class="buscador-campo">
+          <svg class="buscador-lupa" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+            <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+            <path d="M15.5 15.5 21 21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <input id="busquedaArbol" class="buscador-input" type="text" inputmode="search" enterkeyhint="search"
+                 autocomplete="off" autocapitalize="off" spellcheck="false"
+                 placeholder="Busca tu árbol por nombre o número"
+                 role="combobox" aria-expanded="false" aria-controls="resultadosBusqueda" aria-autocomplete="list">
+          <button class="buscador-limpiar" id="limpiarBusqueda" type="button" aria-label="Limpiar búsqueda" hidden>
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+
+        <ul class="buscador-resultados" id="resultadosBusqueda" role="listbox" aria-label="Árboles encontrados" hidden></ul>
+        <p class="buscador-vacio" id="busquedaVacia" hidden>No encontramos ese árbol por ahora. Prueba con otro nombre o con su número.</p>
+        <p class="solo-lectores" id="busquedaEstado" role="status" aria-live="polite"></p>
+      </div>
+
+      <section class="contenedor-bosque" aria-label="Bosque interactivo de 50 árboles">
+        <svg class="lienzo-bosque" id="lienzoBosque" viewBox="0 0 600 520" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Área irregular con 50 árboles interactivos, representando el bosque de la Plantatón">
+        <defs>
+          <clipPath id="recorteBosque">
+            <path d="M 589.3 260.0 C 590.0 272.1, 585.9 284.9, 581.1 296.5 C 576.3 308.1, 568.7 319.3, 560.5 329.4 C 552.2 339.4, 542.4 348.9, 531.7 356.8 C 520.9 364.7, 508.3 371.3, 496.0 376.8 C 483.7 382.2, 469.9 385.5, 457.9 389.5 C 446.0 393.5, 434.6 395.9, 424.6 400.6 C 414.6 405.3, 406.7 410.9, 397.9 417.6 C 389.1 424.2, 381.5 433.7, 371.5 440.5 C 361.6 447.2, 350.2 455.3, 338.3 458.1 C 326.3 460.9, 312.1 460.9, 300.0 457.6 C 287.9 454.3, 275.7 445.6, 265.6 438.3 C 255.4 431.0, 247.6 420.5, 239.0 413.9 C 230.4 407.2, 223.5 401.9, 214.0 398.4 C 204.6 394.8, 193.7 394.8, 182.5 392.7 C 171.3 390.5, 157.4 389.7, 146.9 385.6 C 136.4 381.4, 125.9 375.1, 119.5 367.6 C 113.0 360.0, 110.3 349.5, 108.1 340.2 C 105.9 330.9, 107.6 320.6, 106.3 311.6 C 105.1 302.6, 104.1 294.5, 100.4 285.9 C 96.8 277.3, 90.2 269.4, 84.2 260.0 C 78.1 250.6, 69.7 240.4, 64.2 229.4 C 58.7 218.3, 53.6 206.0, 51.3 193.7 C 49.0 181.5, 48.8 168.4, 50.6 155.8 C 52.3 143.2, 55.9 130.0, 61.8 118.1 C 67.7 106.2, 75.4 93.7, 86.0 84.5 C 96.6 75.3, 110.3 66.8, 125.5 63.0 C 140.6 59.3, 159.7 59.0, 176.9 61.8 C 194.1 64.7, 213.2 73.0, 228.7 80.0 C 244.2 87.0, 257.9 97.6, 269.8 103.8 C 281.7 110.1, 290.4 115.2, 300.0 117.4 C 309.6 119.6, 318.0 117.7, 327.6 117.1 C 337.3 116.5, 348.1 113.3, 357.9 113.9 C 367.7 114.5, 378.3 116.6, 386.6 120.7 C 394.9 124.8, 401.3 132.3, 407.7 138.4 C 414.2 144.5, 418.1 152.0, 425.5 157.1 C 432.8 162.3, 440.7 165.7, 452.1 169.4 C 463.5 173.0, 479.1 174.6, 494.0 178.9 C 508.9 183.3, 527.8 188.1, 541.7 195.6 C 555.5 203.1, 569.1 213.3, 577.1 224.0 C 585.0 234.7, 588.7 247.9, 589.3 260.0 Z"/>
+          </clipPath>
+          <radialGradient id="brumaBosque" cx="42%" cy="38%" r="75%">
+            <stop offset="0%" stop-color="#3a4f42"/>
+            <stop offset="100%" stop-color="#1a221d"/>
+          </radialGradient>
+        </defs>
+
+        <path class="forma-bosque" d="M 589.3 260.0 C 590.0 272.1, 585.9 284.9, 581.1 296.5 C 576.3 308.1, 568.7 319.3, 560.5 329.4 C 552.2 339.4, 542.4 348.9, 531.7 356.8 C 520.9 364.7, 508.3 371.3, 496.0 376.8 C 483.7 382.2, 469.9 385.5, 457.9 389.5 C 446.0 393.5, 434.6 395.9, 424.6 400.6 C 414.6 405.3, 406.7 410.9, 397.9 417.6 C 389.1 424.2, 381.5 433.7, 371.5 440.5 C 361.6 447.2, 350.2 455.3, 338.3 458.1 C 326.3 460.9, 312.1 460.9, 300.0 457.6 C 287.9 454.3, 275.7 445.6, 265.6 438.3 C 255.4 431.0, 247.6 420.5, 239.0 413.9 C 230.4 407.2, 223.5 401.9, 214.0 398.4 C 204.6 394.8, 193.7 394.8, 182.5 392.7 C 171.3 390.5, 157.4 389.7, 146.9 385.6 C 136.4 381.4, 125.9 375.1, 119.5 367.6 C 113.0 360.0, 110.3 349.5, 108.1 340.2 C 105.9 330.9, 107.6 320.6, 106.3 311.6 C 105.1 302.6, 104.1 294.5, 100.4 285.9 C 96.8 277.3, 90.2 269.4, 84.2 260.0 C 78.1 250.6, 69.7 240.4, 64.2 229.4 C 58.7 218.3, 53.6 206.0, 51.3 193.7 C 49.0 181.5, 48.8 168.4, 50.6 155.8 C 52.3 143.2, 55.9 130.0, 61.8 118.1 C 67.7 106.2, 75.4 93.7, 86.0 84.5 C 96.6 75.3, 110.3 66.8, 125.5 63.0 C 140.6 59.3, 159.7 59.0, 176.9 61.8 C 194.1 64.7, 213.2 73.0, 228.7 80.0 C 244.2 87.0, 257.9 97.6, 269.8 103.8 C 281.7 110.1, 290.4 115.2, 300.0 117.4 C 309.6 119.6, 318.0 117.7, 327.6 117.1 C 337.3 116.5, 348.1 113.3, 357.9 113.9 C 367.7 114.5, 378.3 116.6, 386.6 120.7 C 394.9 124.8, 401.3 132.3, 407.7 138.4 C 414.2 144.5, 418.1 152.0, 425.5 157.1 C 432.8 162.3, 440.7 165.7, 452.1 169.4 C 463.5 173.0, 479.1 174.6, 494.0 178.9 C 508.9 183.3, 527.8 188.1, 541.7 195.6 C 555.5 203.1, 569.1 213.3, 577.1 224.0 C 585.0 234.7, 588.7 247.9, 589.3 260.0 Z"
+              fill="url(#brumaBosque)" stroke="rgba(255,255,255,.16)" stroke-width="1.5"/>
+
+        <g id="capaArboles" clip-path="url(#recorteBosque)"></g>
+      </svg>
+
+        <p class="contador-arboles"><span id="contadorNumero">50</span> árboles esperando ser sembrados</p>
+      </section>
+    </div>
+
+    <!-- ===== Invitación a ver el proceso real de siembra (Instagram) ===== -->
+    <aside class="bloque-instagram" aria-labelledby="tituloInstagram">
+      <span class="instagram-icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" focusable="false"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>
+      </span>
+      <div class="instagram-texto">
+        <h2 class="instagram-titulo" id="tituloInstagram">Así se siembra un bosque de niebla</h2>
+        <p class="instagram-descripcion">Acompáñanos al páramo y mira el recorrido real de cada árbol: de la semilla al suelo que ayuda a conservar el agua.</p>
+        <!-- El href real se toma de INSTAGRAM_REEL_URL en arboles-data.js -->
+        <a class="boton-instagram" data-enlace-instagram href="https://www.instagram.com/espejosdeniebla/" target="_blank" rel="noopener noreferrer">
+          <span>Ver proceso de siembra</span>
+          <span class="icono-boton" aria-hidden="true">↗</span>
+          <span class="solo-lectores">(se abre en Instagram, en una pestaña nueva)</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- ===== Tarjeta flotante del árbol activo: foto + nombre + mensaje ===== -->
+    <div class="tarjeta-arbol" id="tarjetaArbol" role="status" aria-live="polite">
+      <figure class="tarjeta-foto">
+        <img id="tarjetaFoto" src="" alt="" width="320" height="240" decoding="async">
+      </figure>
+      <div class="tarjeta-cuerpo">
+        <p class="tarjeta-id" id="tarjetaId">N.º 01</p>
+        <p class="tarjeta-nombre" id="tarjetaNombre">Árbol 01</p>
+        <p class="tarjeta-frase" id="tarjetaFrase">Cada semilla guarda la posibilidad de un bosque.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="pie-pagina">
+    <span class="indicador-scroll">Espejos de Niebla · Siembra Vida</span>
+  </footer>
+
+  <!-- 1º los datos (editables), 2º la lógica -->
+  <script src="arboles-data.js"></script>
+  <script src="donaciones.js"></script>
+</body>
+</html>

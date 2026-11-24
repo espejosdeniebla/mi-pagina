@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Galería fotográfica de Espejos de Niebla.">
+  <title>Galería — Espejos de Niebla</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --white:#fff; --bg:#090909; --muted:rgba(255,255,255,.58); --ease:cubic-bezier(.22,1,.36,1); }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    html,body { width:100%; height:100%; overflow:hidden; background:var(--bg); color:var(--white); font-family:"Parkinsans",sans-serif; }
+    body { overscroll-behavior:none; }
+    button { font:inherit; color:inherit; background:none; border:0; cursor:pointer; }
+    .galeria { position:relative; width:100%; height:100svh; overflow:hidden; }
+    .cabecera { position:fixed; z-index:10; top:0; left:0; right:0; display:flex; justify-content:space-between; align-items:flex-start; padding:24px 28px; pointer-events:none; }
+    .marca { font-size:12px; line-height:1.2; letter-spacing:.12em; text-transform:uppercase; pointer-events:auto; text-decoration:none; color:#fff; opacity:.9; }
+    .volver { font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:#fff; opacity:.65; pointer-events:auto; transition:opacity .3s ease,transform .4s var(--ease); text-decoration:none; }
+    .volver:hover { opacity:1; color:#f3c84d; transform:translateX(-3px); }
+    .pista { position:absolute; inset:0; display:flex; align-items:center; gap:clamp(16px,2.6vw,42px); padding:0 max(8vw,60px); overflow-x:auto; overflow-y:hidden; scrollbar-width:none; cursor:grab; touch-action:pan-x; overscroll-behavior-x:contain; }
+    .pista::-webkit-scrollbar { display:none; }
+    .pista.arrastrando { cursor:grabbing; }
+    .foto { position:relative; flex:0 0 clamp(250px,26vw,430px); height:min(72vh,650px); overflow:hidden; background:#171717; user-select:none; -webkit-user-select:none; }
+    .foto img { width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; filter:saturate(.82); transform:scale(1.001); transition:transform 1s var(--ease), filter .8s ease; }
+    .foto::after { content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(0,0,0,0) 40%,rgba(0,0,0,.78) 100%); pointer-events:none; opacity:.65; transition:opacity .6s ease; }
+    .info { position:absolute; z-index:2; left:24px; right:24px; bottom:22px; transform:translateY(14px); opacity:0; transition:opacity .45s ease,transform .6s var(--ease); pointer-events:none; }
+    .numero { display:block; font-size:10px; letter-spacing:.15em; margin-bottom:8px; color:var(--muted); }
+    .descripcion { font-size:clamp(12px,1vw,15px); line-height:1.35; font-weight:400; max-width:30ch; }
+    .foto:hover img { transform:scale(1.035); filter:saturate(1); }
+    .foto:hover .info, .foto:focus-within .info { opacity:1; transform:translateY(0); }
+    .foto:hover::after { opacity:.9; }
+    .controles { position:fixed; z-index:11; left:28px; right:28px; bottom:25px; display:flex; align-items:center; justify-content:space-between; pointer-events:none; }
+    .flechas { display:flex; gap:8px; pointer-events:auto; }
+    .flecha { width:44px; height:44px; border:1px solid rgba(255,255,255,.35); display:grid; place-items:center; font-size:20px; line-height:1; transition:background .3s ease,border-color .3s ease,opacity .3s ease,transform .4s var(--ease); }
+    .flecha:hover:not(:disabled) { background:#f3c84d; color:#090909; border-color:#f3c84d; transform:translateY(-2px); }
+    .flecha:focus-visible, .volver:focus-visible, .marca:focus-visible { outline:2px solid #f3c84d; outline-offset:3px; }
+    .flecha:disabled { opacity:.2; cursor:default; }
+    .estado { display:flex; align-items:center; gap:15px; font-size:10px; letter-spacing:.13em; color:var(--muted); text-transform:uppercase; }
+    .barra { width:min(22vw,240px); height:1px; background:rgba(255,255,255,.2); position:relative; }
+    .progreso { position:absolute; left:0; top:0; height:1px; width:5%; background:#fff; transition:width .5s var(--ease); }
+    .instruccion { position:fixed; z-index:10; left:50%; bottom:27px; transform:translateX(-50%); font-size:10px; letter-spacing:.13em; text-transform:uppercase; color:rgba(255,255,255,.4); pointer-events:none; }
+    @media (max-width:700px) {
+      .cabecera { padding:18px 18px; }
+      .pista { gap:14px; padding:0 12vw; }
+      .foto { flex-basis:78vw; height:68svh; }
+      .info { opacity:1; transform:none; bottom:18px; left:18px; right:18px; }
+      .foto::after { opacity:.9; }
+      .controles { left:18px; right:18px; bottom:18px; }
+      .flecha { width:40px; height:40px; }
+      .estado { display:none; }
+      .instruccion { bottom:68px; font-size:9px; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      .pista { scroll-behavior:auto; }
+      *,*::before,*::after { transition-duration:.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="galeria" aria-label="Galería fotográfica">
+    <header class="cabecera">
+      <a class="marca" href="index.html">Espejos de Niebla</a>
+      <a class="volver" href="index.html">Cerrar ↗</a>
+    </header>
+
+    <section class="pista" id="pista" aria-label="Fotografías de la galería">
+      <!-- PLACEHOLDER: reemplaza cada src y descripción cuando tengas las fotos definitivas. -->
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 01" draggable="false">
+        <div class="info">
+          <span class="numero">01 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 02" draggable="false">
+        <div class="info">
+          <span class="numero">02 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 03" draggable="false">
+        <div class="info">
+          <span class="numero">03 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 04" draggable="false">
+        <div class="info">
+          <span class="numero">04 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 05" draggable="false">
+        <div class="info">
+          <span class="numero">05 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 06" draggable="false">
+        <div class="info">
+          <span class="numero">06 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 07" draggable="false">
+        <div class="info">
+          <span class="numero">07 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 08" draggable="false">
+        <div class="info">
+          <span class="numero">08 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 09" draggable="false">
+        <div class="info">
+          <span class="numero">09 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 10" draggable="false">
+        <div class="info">
+          <span class="numero">10 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 11" draggable="false">
+        <div class="info">
+          <span class="numero">11 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 12" draggable="false">
+        <div class="info">
+          <span class="numero">12 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 13" draggable="false">
+        <div class="info">
+          <span class="numero">13 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 14" draggable="false">
+        <div class="info">
+          <span class="numero">14 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 15" draggable="false">
+        <div class="info">
+          <span class="numero">15 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 16" draggable="false">
+        <div class="info">
+          <span class="numero">16 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 17" draggable="false">
+        <div class="info">
+          <span class="numero">17 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 18" draggable="false">
+        <div class="info">
+          <span class="numero">18 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 19" draggable="false">
+        <div class="info">
+          <span class="numero">19 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+      <article class="foto">
+        <img src="img/galeria-placeholder.jpg" alt="Fotografía de la galería 20" draggable="false">
+        <div class="info">
+          <span class="numero">20 / 20</span>
+          <p class="descripcion">Una mirada al paisaje y a la vida que habita la alta montaña.</p>
+        </div>
+      </article>
+    </section>
+
+    <div class="controles">
+      <div class="flechas" aria-label="Navegación de la galería">
+        <button class="flecha" id="anterior" type="button" aria-label="Fotografía anterior">←</button>
+        <button class="flecha" id="siguiente" type="button" aria-label="Fotografía siguiente">→</button>
+      </div>
+      <div class="estado" aria-live="polite"><span id="contador">01 / 20</span><span class="barra"><span class="progreso" id="progreso"></span></span></div>
+    </div>
+    <p class="instruccion">Desliza para explorar</p>
+  </main>
+
+  <script>
+    (() => {
+      const pista = document.getElementById('pista');
+      const fotos = [...document.querySelectorAll('.foto')];
+      const anterior = document.getElementById('anterior');
+      const siguiente = document.getElementById('siguiente');
+      const contador = document.getElementById('contador');
+      const progreso = document.getElementById('progreso');
+      let indice = 0;
+      let raf = null;
+      let arrastrando = false, inicioX = 0, scrollInicial = 0;
+
+      const clamp = (n,min,max) => Math.max(min, Math.min(max,n));
+      const actualizar = () => {
+        const centro = pista.scrollLeft + pista.clientWidth / 2;
+        let mejor = 0, distancia = Infinity;
+        fotos.forEach((foto, i) => {
+          const c = foto.offsetLeft + foto.offsetWidth / 2;
+          const d = Math.abs(c - centro);
+          if (d < distancia) { distancia = d; mejor = i; }
+        });
+        indice = mejor;
+        contador.textContent = String(indice + 1).padStart(2,'0') + ' / 20';
+        progreso.style.width = ((indice + 1) / fotos.length * 100) + '%';
+        anterior.disabled = indice === 0;
+        siguiente.disabled = indice === fotos.length - 1;
+      };
+      const ir = (n) => {
+        indice = clamp(n,0,fotos.length-1);
+        const foto = fotos[indice];
+        pista.scrollTo({ left: foto.offsetLeft - (pista.clientWidth - foto.offsetWidth) / 2, behavior:'smooth' });
+        actualizar();
+      };
+      anterior.addEventListener('click', () => ir(indice - 1));
+      siguiente.addEventListener('click', () => ir(indice + 1));
+      pista.addEventListener('scroll', () => {
+        if (raf) cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(actualizar);
+      }, {passive:true});
+      window.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); ir(indice - 1); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); ir(indice + 1); }
+        if (e.key === 'Home') { e.preventDefault(); ir(0); }
+        if (e.key === 'End') { e.preventDefault(); ir(fotos.length - 1); }
+        if (e.key === 'Escape') window.location.href = 'index.html#galeria';
+      });
+      // Drag con mouse para una sensación similar al swipe.
+      pista.addEventListener('pointerdown', e => {
+        if (e.pointerType !== 'mouse') return;
+        arrastrando = true; inicioX = e.clientX; scrollInicial = pista.scrollLeft;
+        pista.classList.add('arrastrando'); pista.setPointerCapture(e.pointerId);
+      });
+      pista.addEventListener('pointermove', e => {
+        if (!arrastrando) return;
+        pista.scrollLeft = scrollInicial - (e.clientX - inicioX);
+      });
+      const terminarDrag = () => { if (!arrastrando) return; arrastrando = false; pista.classList.remove('arrastrando'); ir(indice); };
+      pista.addEventListener('pointerup', terminarDrag);
+      pista.addEventListener('pointercancel', terminarDrag);
+      window.addEventListener('resize', actualizar);
+      requestAnimationFrame(() => { ir(0); actualizar(); });
+    })();
+  </script>
+</body>
+</html>

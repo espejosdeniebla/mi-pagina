@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Conoce al equipo de Espejos de Niebla.">
+  <title>Nosotros — Espejos de Niebla</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body class="pagina-nosotros">
+  <!-- VIDEO DE FONDO OPCIONAL: coloca nosotros.mp4 en assets/videos/backgrounds/ -->
+  <video class="video-fondo video-fondo-nosotros" data-bg-video="nosotros" autoplay muted loop playsinline preload="none" aria-hidden="true">
+    <source src="assets/videos/backgrounds/nosotros.mp4" type="video/mp4">
+  </video>
+  <div class="capa-oscura capa-oscura-nosotros" aria-hidden="true"></div>
+
+  <header class="encabezado encabezado-nosotros">
+    <a href="index.html#inicio" class="enlace-logo" aria-label="Volver al inicio">
+      <img src="img/Logo_contornos.png" alt="Espejos de Niebla" class="imagen-logo">
+    </a>
+    <a href="index.html" class="volver-inicio">← Inicio</a>
+  </header>
+
+  <main class="contenido-nosotros">
+    <div class="cabecera-nosotros">
+      <p class="eyebrow">Espejos de Niebla</p>
+      <h1>Nosotros</h1>
+    </div>
+
+    <section class="equipo" aria-label="Integrantes del proyecto">
+      <figure class="foto-grupal">
+        <img src="img/img_nosotros/Nosotros.jpg" alt="Fotografía grupal del equipo">
+      </figure>
+
+      <div class="fotos-individuales">
+        <button class="tarjeta-integrante" type="button" data-integrante="integrante1">
+          <img src="img/img_nosotros/Valentina.jpg" alt="Fotografía de Valentina">
+          <span>Valentina</span>
+        </button>
+        <button class="tarjeta-integrante" type="button" data-integrante="integrante2">
+          <img src="img/img_nosotros/Daniel.jpg" alt="Fotografía de Daniel">
+          <span>Daniel</span>
+        </button>
+        <button class="tarjeta-integrante" type="button" data-integrante="integrante3">
+          <img src="img/img_nosotros/Nicolás.jpg" alt="Fotografía de Nicolás">
+          <span>Nicolás</span>
+        </button>
+      </div>
+    </section>
+
+    <p class="descripcion-equipo">
+      Somos tres personas que compartimos el interés por la conservación y la comunicación audiovisual.
+      Desde nuestras diferentes habilidades construimos <em>Espejos de Niebla</em> para acercar la belleza
+      de los ecosistemas de alta montaña a más personas.
+    </p>
+  </main>
+
+  <div class="modal-integrante" id="modalIntegrante" aria-hidden="true">
+    <div class="modal-contenido" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+      <button class="cerrar-modal" id="cerrarModal" type="button" aria-label="Cerrar">×</button>
+      <p class="eyebrow">Equipo</p>
+      <h2 id="modalTitulo">Integrante</h2>
+      <p id="modalTexto">Descripción breve del integrante.</p>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script>
+    // El video de Nosotros es opcional; si no existe, permanece el fondo de respaldo.
+    const rutaFondoNosotros = window.ESPEJOS_CONFIG?.backgroundVideos?.nosotros;
+    const fondoNosotros = document.querySelector('[data-bg-video="nosotros"]');
+    if (rutaFondoNosotros && fondoNosotros) {
+      const sourceFondo = fondoNosotros.querySelector('source');
+      if (sourceFondo) {
+        sourceFondo.src = rutaFondoNosotros;
+        fondoNosotros.load();
+      }
+      fondoNosotros.addEventListener('error', () => fondoNosotros.classList.add('video-fondo-no-disponible'), { once: true });
+    }
+  </script>
+  <script>
+    const datosIntegrantes = {
+      integrante1: {
+        titulo: 'Valentina',
+        texto: 'Responsable de la fotografía y la construcción visual del proyecto.'
+      },
+      integrante2: {
+        titulo: 'Daniel',
+        texto: 'Encargado de la producción audiovisual y el desarrollo de la narrativa.'
+      },
+      integrante3: {
+        titulo: 'Nicolás',
+        texto: 'Apoya la investigación, el diseño y la comunicación del proyecto.'
+      }
+    };
+
+    const modal = document.getElementById('modalIntegrante');
+    const modalTitulo = document.getElementById('modalTitulo');
+    const modalTexto = document.getElementById('modalTexto');
+    const cerrar = document.getElementById('cerrarModal');
+
+    document.querySelectorAll('.tarjeta-integrante').forEach(tarjeta => {
+      tarjeta.addEventListener('click', () => {
+        const dato = datosIntegrantes[tarjeta.dataset.integrante];
+        modalTitulo.textContent = dato.titulo;
+        modalTexto.textContent = dato.texto;
+        modal.classList.add('visible');
+        modal.setAttribute('aria-hidden', 'false');
+      });
+    });
+
+    const cerrarModal = () => {
+      modal.classList.remove('visible');
+      modal.setAttribute('aria-hidden', 'true');
+    };
+
+    cerrar.addEventListener('click', cerrarModal);
+    modal.addEventListener('click', e => {
+      if (e.target === modal) cerrarModal();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') cerrarModal();
+    });
+  </script>
+</body>
+</html>
